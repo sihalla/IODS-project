@@ -51,7 +51,7 @@ The mean for deep learning is 3.7 (range 1.6-4.9), the mean for strategic learni
 
 The mean exam points was 22.7 (range 7.0-33.0). 
 
-In males there was a low-moderate positive correlation between attitude and exam points in both genders. In males there was a low negative correlation between attitude and surface learning. In addition, there was a low-moderate negative correlation in males between deep learning and surface learning.
+There was a low-moderate positive correlation between attitude and exam points in both genders. In males there was a low negative correlation between attitude and surface learning. In addition, there was a low-moderate negative correlation in males between deep learning and surface learning.
 
 ```{r}
 #choose three variables as explanatory variables and fit a regression model where exam points is the target (dependent, outcome) variable. Show a summary of the fitted model 
@@ -91,11 +91,11 @@ plot(my_model3, which = 5)
 ## Explaining the assumptions behind the  regression model (model3)
 1) The data should be normally distributed. There are many ways to test/model this, but our previous histogram and Normal QQ-plot already tell us, that our residuals are fairly normally distributed, but there are some exceptions at the upper and lower ends.
 
-2) One of the important assumptions in linear regression. It means that error remains constant along the values of the dependent variable. This means that there should not be a higher variance among students with a high/low attitude.  We can check this with a residuals vs fitted plot. There the residuals are located randomly around 0-line,  which suggest that our assumption of the linear relationship is reasonable.
+2) One of the important assumptions is linear regression. It means that error remains constant along the values of the dependent variable.  We can check this with a residuals vs fitted plot. There the residuals are located randomly around 0-line,  which suggest that our assumption of the linear relationship is reasonable.
 
 3) Another important assumptions of the linear model is homoscedasticity , which means that the variance of our residuals stay the same independent of the explanatory variable. We can check this with a residuals vs fitted plot. The residuals roughly form a horisontal band close to the 0-line which suggest that the variances of the error terms are equal. However, three residuals stand out and they might be outliers.
 
-4) Outliers can be looked out by our Residuals vs Leverage model. Points that have high residual and high leverage at the same my be harmful to our model and accuracy of our regression. None of the points seem to be out of Cook's distance so we don't seem to have significant outliers after all.
+4) Outliers can be looked out by our Residuals vs Leverage model. Points that have high residual and high leverage at the same my be harmful to our model and compromise the accuracy of our regression. None of the points seem to be out of Cook's distance so we don't seem to have significant outliers after all.
 
 After all our model seems to be reasonably well fitted.
 

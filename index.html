@@ -398,7 +398,7 @@ the assumptions behind the regression model (model3)</a></li>
 <pre class="r"><code># This is a so-called &quot;R chunk&quot; where you can write R code.
 
 date()</code></pre>
-<pre><code>## [1] &quot;Fri Nov 11 14:42:05 2022&quot;</code></pre>
+<pre><code>## [1] &quot;Fri Nov 11 14:47:31 2022&quot;</code></pre>
 <p>I heard about this course on the university mailing list. I thought
 this course might be useful, because I just started working in a
 research project where the other researches have previously utilized R.
@@ -412,7 +412,7 @@ for my own projects in the future.</p>
 <h1>Chapter 2: Regression analysis</h1>
 <pre class="r"><code>#reading the data
 date()</code></pre>
-<pre><code>## [1] &quot;Fri Nov 11 14:42:05 2022&quot;</code></pre>
+<pre><code>## [1] &quot;Fri Nov 11 14:47:31 2022&quot;</code></pre>
 <pre class="r"><code>library(tidyverse)</code></pre>
 <pre><code>## ── Attaching packages ─────────────────────────────────────── tidyverse 1.3.2 ──
 ## ✔ ggplot2 3.3.6      ✔ purrr   0.3.5 
@@ -484,11 +484,11 @@ summary.factor(students2014$gender)</code></pre>
 is 3.7 (range 1.6-4.9), the mean for strategic learning is 3.1 (range
 1.3-5.0) and the mean for surface learning is 2.8 (range 1.6-4.3).</p>
 <p>The mean exam points was 22.7 (range 7.0-33.0).</p>
-<p>In males there was a low-moderate positive correlation between
-attitude and exam points in both genders. In males there was a low
-negative correlation between attitude and surface learning. In addition,
-there was a low-moderate negative correlation in males between deep
-learning and surface learning.</p>
+<p>There was a low-moderate positive correlation between attitude and
+exam points in both genders. In males there was a low negative
+correlation between attitude and surface learning. In addition, there
+was a low-moderate negative correlation in males between deep learning
+and surface learning.</p>
 <pre class="r"><code>#choose three variables as explanatory variables and fit a regression model where exam points is the target (dependent, outcome) variable. Show a summary of the fitted model 
 
 # create a regression model with multiple explanatory variables
@@ -584,13 +584,11 @@ plot(my_model3, which = 1) </code></pre>
 test/model this, but our previous histogram and Normal QQ-plot already
 tell us, that our residuals are fairly normally distributed, but there
 are some exceptions at the upper and lower ends.</p></li>
-<li><p>One of the important assumptions in linear regression. It means
+<li><p>One of the important assumptions is linear regression. It means
 that error remains constant along the values of the dependent variable.
-This means that there should not be a higher variance among students
-with a high/low attitude. We can check this with a residuals vs fitted
-plot. There the residuals are located randomly around 0-line, which
-suggest that our assumption of the linear relationship is
-reasonable.</p></li>
+We can check this with a residuals vs fitted plot. There the residuals
+are located randomly around 0-line, which suggest that our assumption of
+the linear relationship is reasonable.</p></li>
 <li><p>Another important assumptions of the linear model is
 homoscedasticity , which means that the variance of our residuals stay
 the same independent of the explanatory variable. We can check this with
@@ -600,9 +598,9 @@ are equal. However, three residuals stand out and they might be
 outliers.</p></li>
 <li><p>Outliers can be looked out by our Residuals vs Leverage model.
 Points that have high residual and high leverage at the same my be
-harmful to our model and accuracy of our regression. None of the points
-seem to be out of Cook’s distance so we don’t seem to have significant
-outliers after all.</p></li>
+harmful to our model and compromise the accuracy of our regression. None
+of the points seem to be out of Cook’s distance so we don’t seem to have
+significant outliers after all.</p></li>
 </ol>
 <p>After all our model seems to be reasonably well fitted.</p>
 <hr />
