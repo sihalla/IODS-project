@@ -1,0 +1,170 @@
+# Chapter 3: Logistic regression
+
+```{r}
+# install.packages("boot")
+# install.packages("readr")
+```
+
+```{r}
+#reading the data
+library(tidyverse)
+alc <- read.csv("https://raw.githubusercontent.com/KimmoVehkalahti/Helsinki-Open-Data-Science/master/datasets/alc.csv")
+
+#an option would be open the .csv file from the directory by activating this chunk: alc <- read.csv("data/alc.csv")"). Both seem to be working.
+```
+
+# Describtion of the dataset
+```{r}
+
+library(GGally)
+library(ggplot2)
+library(dplyr)
+library(tidyverse)
+
+#print information of the current data
+colnames(alc)
+dim(alc)
+
+#"The original data is derived from student achievement in secondary education of two Portuguese schools. The data attributes include student grades, demographic, social and school related features) and it was collected by using school reports and questionnaires. Two datasets are provided regarding the performance in two distinct subjects: Mathematics (mat) and Portuguese language (por). G1-G3 mean the grade the student was in. 
+
+#The orignal dataset has been edited and the variables not used for joining the two data have been combined by averaging (including the grade variables). Alc_use is the average of daily (Dalc) and weekend (Walc) alcohol use. High_use is True if the subject takes over 2 doses alcohol per week. "
+#This current dataset has 370 observations and 35 variables. 
+
+summary.factor(alc$sex)
+#195 females and  175 males.
+
+summary(alc$age)
+#median age is 17, mean 16.6 (range 15-22)
+
+summary(alc$studytime)
+#median study time is 2 hours (range 1-4h)
+
+summary(alc$failures)
+#median 0, mean 0,19 (range 0-3)
+
+
+```
+
+#Studying the reasons behind high alcohol consumption
+```{r}
+
+library(GGally)
+library(ggplot2)
+library(dplyr)
+library(tidyverse)
+
+#The hypothesis is that male sex, high age, failures and low studytime increase the risk of high alcohol consumption among these secondary school students.
+
+#visualizing the data
+boxplot(alc_use~age, data=alc, col = "green")
+hist(subset(alc, alc_use > 2)$age, col = "green") 
+        
+boxplot(alc_use~sex, data=alc, col = "red")
+
+boxplot(alc_use~failures, data=alc, col = "blue")
+
+boxplot(alc_use~studytime, data=alc, col = "orange")
+
+g1 <- ggplot(alc, aes(x = alc_use, y = studytime, col=sex))
+g1 + geom_boxplot()
+
+#It seems like alcohol use tends to rise between the years 15-18. Then there seems to be some  variation: There are no high-users in the age groups 19-21 but one very heavy drinker in the oldest age group. However, there are so few participants in the older cohorts that it is hard to make reliable group comparisons between them. The histograms supports our other hypotheses: Females tend to be drinking less on average, and true heavy drinkers are outliers in the female histogram. Males have more variance in the amount of drinking but the weekly drinking average is higher than in females.  Not surprisingly, more studying seems to correlate to less drinking and more failures seems to correlate to more drinking.
+
+```
+
+#Logistic regression
+```{r}
+library(dplyr)
+library(ggplot2)
+library(tidyr)
+
+# modeling with glm()
+m <- glm(high_use ~ failures + studytime + sex + age, data = alc, family = "binomial")
+
+# print out the coefficients of the model
+coef(m)
+# compute confidence intervals (CI)
+CI <- confint(m) %>% exp
+
+# compute odds ratios (OR)
+OR <- coef(m) %>% exp
+
+# print out the odds ratios with their confidence intervals
+cbind(OR, CI)
+
+# print out a summary of the model
+summary(m)
+
+# print out the coefficients of the model
+coef(m)
+
+#p-values were statistically significant (<0.05) for failures, studytime and sex but not for age. 
+# Coefficients for this model were: failures 0.47, studytime -0.42 and sex 0.7. For failures OR was 1.60 [95 % CI 1.06 - 2.46], for studytime OR was 0.65 [95 % CI 0.47-0.89] and for sex 2.02 [95 % CI 1.24 - 3.31]. Sex has the highest predictive value in this model. This means that e.g. for each failure increases the odds of high alcohol consumption 1.60 times. Male sex increases the risk of being a high-user 2.02 times. 
+
+
+```
+#Exploring the power of the created model 
+```{r}
+library(dplyr)
+library (readr)
+library(ggplot2)
+
+# fiting the model for the variables that had statistical relationship with high/low alcohol consumption
+m <- glm(high_use ~ failures + studytime + sex , data = alc, family = "binomial")
+         
+# predicting the probability of high_use
+probabilities <- predict(m, type = "response")
+
+# add the predicted probabilities to 'alc'
+alc <- mutate(alc, probability = probabilities)
+
+# use the probabilities to make a prediction of high_use
+alc <- mutate(alc, prediction = probabilities > 0.5)
+
+# see the last ten original classes, predicted probabilities, and class predictions
+select(alc, failures, sex, studytime, high_use, probability, prediction) %>% tail(10)
+
+# tabulate the target variable versus the predictions
+table(high_use = alc$high_use, prediction = alc$prediction)
+
+#There were 91+20 = 111 high users and the model predicted right only 20 of them. There were 245+14 = 259 not high users  and the model predicted right 245 of them. So this model was not very good in spotting high users.
+
+
+#graphic visualization of the model:
+
+# initialize a plot of 'high_use' versus 'probability' in 'alc'
+g <- ggplot(alc, aes(x = probability, y = high_use, col = prediction))
+# define the geom as points and draw the plot
+g + geom_point()
+# tabulate the target variable versus the predictions
+table(high_use = alc$high_use, prediction = alc$prediction)%>% 
+  prop.table()%>%
+  addmargins()
+
+
+
+
+
+
+
+# define a loss function (average prediction error)
+loss_func <- function(class, prob) {
+  n_wrong <- abs(class - prob) > 0.5
+  mean(n_wrong)
+}
+# compute the average number of wrong predictions in the (training) data
+loss_func(class = alc$high_use, prob = alc$probability)
+# K-fold cross-validation
+#install.packages("boot")
+library(boot)
+cv <- cv.glm(data = alc, cost = loss_func, glmfit = m, K = nrow(alc))
+# average number of wrong predictions in the cross validation
+cv$delta[1]
+#testing data
+cv <- cv.glm(data = alc, cost = loss_func, glmfit = m, K = 10)
+cv$delta[1]
+
+# The training error indicates that the average number of wrong predictions of the model is 0.29. 
+
+
+```
