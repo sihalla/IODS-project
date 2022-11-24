@@ -1,6 +1,6 @@
-#Chapter 4
+# Chapter 4: Clustering and classification
 
-#Overview of the data
+# Overview of the data
 ```{r, echo=FALSE}
 # Loading the Boston dataset from the Mass package.
 library(MASS)
@@ -34,7 +34,9 @@ corrplot(cor_matrix2, method="circle", type = 'upper')
 
 
 ```
-#Standardizing the dataset and creating a test data set
+
+
+# Standardizing the dataset and creating a test data set
 
 ```{r, echo=FALSE}
 
@@ -100,7 +102,7 @@ correct_classes <- test$crime
 # remove the crime variable from test data
 test <- dplyr::select(test, -crime)
 ```
-#Linear discriminant analysis on the train set
+# Linear discriminant analysis on the train set
 ```{r, echo=FALSE}
 #Fitting the linear discriminant analysis on the train set and representing the results in the LDA (bi)plot
 library(MASS)
@@ -128,7 +130,7 @@ lda.arrows(lda.fit, myscale = 4)
 
 ```
 
-##Predict LDA
+# Predict LDA
 ```{r}
 lda.fit = lda(crime ~ ., data=train)
 
@@ -138,11 +140,11 @@ lda.pred <- predict(lda.fit, newdata = test)
 # cross tabulate the result
 table(correct = correct_classes, predicted = lda.pred$class)
 
-# So our model can predict very well who belong to the  high-crime class (no false negatives, but one high was classified as med-high). The other classes instead have much more variation/the model is not performing as well in predicting them. 
+# So our model can predict  who belong to the  high-crime class very well (no false negatives, but one high was classified as med-high). The other classes instead have much more variation/the model is not performing as well in predicting them. 
 
 ```
 
-#K-means clustering
+# K-means clustering
 ```{r, echo=FALSE}
 #Reloading the Boston dataset and standardizing it
 library(MASS)
