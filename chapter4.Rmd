@@ -138,7 +138,7 @@ lda.pred <- predict(lda.fit, newdata = test)
 # cross tabulate the result
 table(correct = correct_classes, predicted = lda.pred$class)
 
-# So our model can predict very well who belong to the  high-crime class (no false negatives, but one high was classified as med-high). The other classes instead have much more variation/the model is not performing as well in predicting them.
+# So our model can predict very well who belong to the  high-crime class (no false negatives, but one high was classified as med-high). The other classes instead have much more variation/the model is not performing as well in predicting them. 
 
 ```
 
