@@ -13,7 +13,7 @@ alc <- read.csv("https://raw.githubusercontent.com/KimmoVehkalahti/Helsinki-Open
 #an option would be open the .csv file from the directory by activating this chunk: alc <- read.csv("data/alc.csv")"). Both seem to be working.
 ```
 
-# Describtion of the dataset
+## Describtion of the dataset
 ```{r}
 
 library(GGally)
@@ -45,7 +45,7 @@ summary(alc$failures)
 
 ```
 
-#Studying the reasons behind high alcohol consumption
+## Studying the reasons behind high alcohol consumption
 ```{r}
 
 library(GGally)
@@ -72,7 +72,7 @@ g1 + geom_boxplot()
 
 ```
 
-#Logistic regression
+## Logistic regression
 ```{r}
 library(dplyr)
 library(ggplot2)
@@ -103,7 +103,7 @@ coef(m)
 
 
 ```
-#Exploring the power of the created model 
+## Exploring the power of the created model 
 ```{r}
 library(dplyr)
 library (readr)

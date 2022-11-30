@@ -87,6 +87,8 @@ library(tidyr)
 library(ggplot2)
 library(FactoMineR)
 tea <- read.table("https://raw.githubusercontent.com/KimmoVehkalahti/Helsinki-Open-Data-Science/master/datasets/tea.csv", sep = ",", header = T)
+# An option would have been to load: "tea <- read.csv("https://raw.githubusercontent.com/KimmoVehkalahti/Helsinki-Open-Data-Science/master/datasets/tea.csv", stringsAsFactors = TRUE)." This would also convert all the character variables of the data to factors (= R representation of categorical variables with 2 or more levels and labels). So you do NOT have to make  conversions one by one, e.g., tea$sugar <- factor(tea$sugar) etc. However I had already done the conversions, so I decided to go with the old version.
+
 
 #structure of the data
 str(tea)
