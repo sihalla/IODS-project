@@ -2,7 +2,7 @@
 
 
 ## Overview of the data
-```{r, echo=FALSE}
+```{r}
 # Loading the dataset from the server, since I decided to finish the data wrangling last in case I will run out of time this week.
 
 library(MASS)
@@ -36,7 +36,7 @@ There is a statistically significant positive correlation e.g. between the amoun
 
 
 ## PCA on non standardized and standardized data
-```{r, echo=FALSE}
+```{r}
 library(GGally)
 library(corrplot)
 
@@ -73,12 +73,10 @@ In PCA similar countries cluster together (they have similar scores on the PCA c
 * Labo.FM and Parli.F are most important for explaining PC2, the rest were more important for explaining PC1.
 
 
-```{r, echo=FALSE}
 
-```
 
-## MCA analsyis (on tea dataset)
-```{r, echo=FALSE}
+# MCA analsyis (on tea dataset)
+```{r}
 
 #. Interpret the results of the MCA and draw at least the variable biplot of the analysis. You can also explore other plotting options for MCA. Comment on the output of the plots. 
 
@@ -139,7 +137,7 @@ tea_ <- filter(tea, complete.cases(tea))
 
 #visualize
 pivot_longer(tea_, cols = everything()) %>% 
-  ggplot(aes(value)) + facet_wrap("name", scales = "free") + geom_bar() 
+  ggplot(aes(value)) + facet_wrap("name", scales = "free") + geom_bar() + theme(axis.text=element_text(size=4))
 
 #MCA analysis
 mca <- MCA(tea_, graph = FALSE)
