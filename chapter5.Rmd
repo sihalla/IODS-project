@@ -1,0 +1,168 @@
+# Chapter 5: Dimensionality reduction techniques
+
+
+## Overview of the data
+```{r, echo=FALSE}
+# Loading the dataset from the server, since I decided to finish the data wrangling last in case I will run out of time this week.
+
+library(MASS)
+library(ggplot2)
+library(GGally)
+library(dplyr)
+
+human <- read.table("https://raw.githubusercontent.com/KimmoVehkalahti/Helsinki-Open-Data-Science/master/datasets/human2.txt", sep=",", header=TRUE)
+
+# a graphical overview of the data and show summaries of the variables in the data.
+str(human)
+summary(human)
+
+#  graphical overview of data 
+p1 <- ggpairs(human, mapping = aes(), lower = list(combo = wrap("facethist", bins = 20)))
+p1
+
+# calculate the correlation matrix and round it
+cor_matrix <- cor(human)
+cor_matrix2 <- round(cor_matrix,digits=2)
+
+# visualize the correlation matrix
+library(corrplot)
+corrplot(cor_matrix2, method="circle", type = 'upper')
+
+ 
+```
+
+
+There is a statistically significant positive correlation e.g. between the amount of education and life expectancy. The better educated seem to live longer. There is a significant negative correlation between adolecent births and e.g. life expectancy and amount of ecuation. This means that becoming mom early seems to hinder achieving proper education and shortens the life expectancy.
+
+
+## PCA on non standardized and standardized data
+```{r, echo=FALSE}
+library(GGally)
+library(corrplot)
+
+#filter out N/A-values
+human <- filter(human, complete.cases(human))
+
+# perform principal component analysis for non standardized data
+pca_human <- prcomp(human)
+
+# draw a biplot of the principal component representation and the original variables
+biplot(pca_human, choices = 1:2, cex = c(0.3, 1), col = c("grey40", "deeppink2")) 
+
+summary(pca_human)
+# standardize the variables
+human_std <- scale(human)
+
+# print out summaries of the standardized variables
+summary(human_std)
+
+# perform principal component analysis (with the SVD method)
+pca_human2 <- prcomp(human_std)
+summary(pca_human2)
+
+# draw a biplot of the principal component representation 
+biplot(pca_human2, choices = 1:2, cex = c(0.5, 1), col = c("grey40", "deeppink2"))
+
+```
+
+## Interpretation of the PCA
+* The PCA for both standardized and non-standanrdized data are represented above.
+In PCA similar countries cluster together (they have similar scores on the PCA components). And PCA can tell us what is the most valuable variable for clustering our data.  "The length of the arrows approximates the variance of the variables, whereas the angels between them (cosine) approximate their correlations."
+* Results of these two models differ from each others significantly due to the different scaling of the variables. In the non-scaled model there were several zero-length arrows that were skipped and in the visualization and only GNI shows as a long single arrow.  Without scaling most of the data is very far from the origin and can thus  not be approximated by a (low dimension) linear subspace. Scaling (centering) is essential for PCA to give reasonable results.
+* In our standardized model the  porpotion of variance for PC1 is  0.536 and for PC2 0.162. Together they explain 0.698 of the total variance (the rest PC3-PC8 were less significant). The amount of componentes that explain 70-90 % of total variation of the original variables is usually considered appropriate in principal component analysis.
+* Labo.FM and Parli.F are most important for explaining PC2, the rest were more important for explaining PC1.
+
+
+```{r, echo=FALSE}
+
+```
+
+## MCA analsyis (on tea dataset)
+```{r, echo=FALSE}
+
+#. Interpret the results of the MCA and draw at least the variable biplot of the analysis. You can also explore other plotting options for MCA. Comment on the output of the plots. 
+
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(FactoMineR)
+tea <- read.table("https://raw.githubusercontent.com/KimmoVehkalahti/Helsinki-Open-Data-Science/master/datasets/tea.csv", sep = ",", header = T)
+
+#structure of the data
+str(tea)
+colnames(tea)
+# View(tea)
+summary(tea)
+
+#convert to factors
+tea$sugar <- factor(tea$sugar)
+tea$breakfast <- factor(tea$breakfast)
+tea$tea.time <- factor(tea$tea.time)
+tea$evening <- factor(tea$evening)
+tea$lunch <- factor(tea$lunch)
+tea$dinner <- factor(tea$dinner)
+tea$always <- factor(tea$always)
+tea$home <- factor(tea$home)
+tea$work <- factor(tea$work)
+tea$age <- factor(tea$age)
+tea$tearoom <- factor(tea$tearoom)
+tea$friends <- factor(tea$friends)
+tea$resto <- factor(tea$resto)
+tea$pub <- factor(tea$pub)
+tea$how <- factor(tea$how)
+tea$where <- factor(tea$where)
+tea$Tea <- factor(tea$Tea)
+tea$price <- factor(tea$price)
+tea$sex <- factor(tea$sex)
+tea$SPC <- factor(tea$SPC)
+tea$Sport <- factor(tea$Sport)
+tea$age_Q <- factor(tea$age_Q)
+tea$frequency <- factor(tea$frequency)
+tea$escape.exoticism <- factor(tea$escape.exoticism)
+tea$spirituality <- factor(tea$spirituality)
+tea$healthy <- factor(tea$healthy)
+tea$diuretic <- factor(tea$diuretic)
+tea$friendliness <- factor(tea$friendliness)
+tea$iron.absorption <- factor(tea$iron.absorption)
+tea$feminine <- factor(tea$feminine)
+tea$sophisticated <- factor(tea$sophisticated)
+tea$slimming <- factor(tea$slimming)
+tea$exciting <- factor(tea$exciting)
+tea$relaxing <- factor(tea$relaxing)
+tea$effect.on.health <- factor(tea$effect.on.health)
+
+
+## filter out all rows with NA values
+tea_ <- filter(tea, complete.cases(tea))
+
+#visualize
+pivot_longer(tea_, cols = everything()) %>% 
+  ggplot(aes(value)) + facet_wrap("name", scales = "free") + geom_bar() 
+
+#MCA analysis
+mca <- MCA(tea_, graph = FALSE)
+mca2 <- MCA(tea_[1:10], graph = FALSE)
+
+# summary of the model
+summary(mca)
+
+# visualize MCA'
+#install.packages("FactoMineR")
+#install.packages("factoextra")
+
+library(FactoMineR)
+library(factoextra)
+plot(mca, invisible=c("ind"), habillage = "quali", graph.type = "classic")
+plot(mca2, invisible=c("ind"), habillage = "quali", graph.type = "classic")
+
+
+get_eig(mca)
+
+get_eigenvalue(mca)
+fviz_eig(mca)
+
+
+
+```
+
+In the MCA model including all the variables(mca), the first dimension explained only 3,2 % %  the total variance (inertia). Only when reaching the dimension 52, the model explains 70 % of total variance. The MCA plot is very messy and hard to read because it has so many variables (and it  plots every level of the categorial variables eg. both dinner and Not.dinner). It gets much more easier to read when including only the ten first variables (mca2), and in this model the first dimension explains 17,94 % of the variance.
