@@ -75,11 +75,10 @@ In PCA similar countries cluster together (they have similar scores on the PCA c
 
 
 
-# MCA analsyis (on tea dataset)
+# Multiple correspondence analysis  (on tea dataset)
 ```{r}
 
-#. Interpret the results of the MCA and draw at least the variable biplot of the analysis. You can also explore other plotting options for MCA. Comment on the output of the plots. 
-
+#reading the data
 library(dplyr)
 library(tidyr)
 library(ggplot2)
@@ -88,7 +87,7 @@ tea <- read.table("https://raw.githubusercontent.com/KimmoVehkalahti/Helsinki-Op
 # An option would have been to load: "tea <- read.csv("https://raw.githubusercontent.com/KimmoVehkalahti/Helsinki-Open-Data-Science/master/datasets/tea.csv", stringsAsFactors = TRUE)." This would also convert all the character variables of the data to factors (= R representation of categorical variables with 2 or more levels and labels). So you do NOT have to make  conversions one by one, e.g., tea$sugar <- factor(tea$sugar) etc. However I had already done the conversions, so I decided to go with the old version.
 
 
-#structure of the data
+#defining the structure of the data
 str(tea)
 colnames(tea)
 # View(tea)
@@ -132,7 +131,7 @@ tea$relaxing <- factor(tea$relaxing)
 tea$effect.on.health <- factor(tea$effect.on.health)
 
 
-## filter out all rows with NA values
+# filter out all rows with NA values
 tea_ <- filter(tea, complete.cases(tea))
 
 #visualize
@@ -143,10 +142,10 @@ pivot_longer(tea_, cols = everything()) %>%
 mca <- MCA(tea_, graph = FALSE)
 mca2 <- MCA(tea_[1:10], graph = FALSE)
 
-# summary of the model
+# summary of the MCA model
 summary(mca)
 
-# visualize MCA'
+# define eigenvalues and visualize the MCA model
 #install.packages("FactoMineR")
 #install.packages("factoextra")
 
@@ -157,7 +156,6 @@ plot(mca2, invisible=c("ind"), habillage = "quali", graph.type = "classic")
 
 
 get_eig(mca)
-
 get_eigenvalue(mca)
 fviz_eig(mca)
 
