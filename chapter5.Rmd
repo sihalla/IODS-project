@@ -134,9 +134,16 @@ tea$effect.on.health <- factor(tea$effect.on.health)
 # filter out all rows with NA values
 tea_ <- filter(tea, complete.cases(tea))
 
-#visualize
-pivot_longer(tea_, cols = everything()) %>% 
+
+# Create a  smaller dataset with  interesting variables
+teaS <- select(tea_, one_of(c("How", "how", "where", "friends", "breakfast", "dinner", "evening", "Tea", "sugar")))
+
+
+# Plot
+pivot_longer(teaS, cols = everything()) %>% 
   ggplot(aes(value)) + facet_wrap("name", scales = "free") + geom_bar() + theme(axis.text=element_text(size=4))
+
+
 
 #MCA analysis
 mca <- MCA(tea_, graph = FALSE)
