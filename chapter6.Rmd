@@ -1,7 +1,7 @@
 #  Chapter 6: Analysis of longitudinal data
 
 ## The analyses of Chapter 8 of MABS using the RATS data
- The data is dervied froma nutrition study conducted in three groups of rats(Crowder and Hand, 1990). The three groups were put on diﬀerent diets, andeach animal’s body weight (grams) was recorded repeatedly (approximatelyweekly, except in week seven when two recordings were taken) over a 9-week period. The question of most interest is whether the growth proﬁles of the three groups differ
+ The data is derived from a  nutrition study conducted in three groups of rats (Crowder and Hand, 1990). The three rat groups were put on different diets, and each animal’s body weight (grams) was recorded repeatedly (approximately weekly). The question of most interest is whether the growth profiles of the three groups differ.
 
 ### Graphical displays of standardized and non-standardized data
 ```{r}
@@ -52,7 +52,10 @@ ggplot(RATSL, aes(x = Time, y = stdweight, linetype = ID)) +
 
 An important effect we want to take notice is how the rats who have higher weights  at the beginning  have higher weights throughout the study. This phenomenon is called  tracking.
 
-All the rats also increase in weight during the study. The rats are quite homogenous with  their group members, meaning there is not much inside group variability in weights (dispite the one obvious outlier in group 2)
+All the rats also increase in weight during the study. The rats are quite homogenous with  their group members, meaning there is not much inside group variability in weights (dispite the one obvious outlier in group 2). The different rat groups differ in their weight significantly and by visual judgment there seems to be a significant outlier in group 2. 
+
+Judgding by the plot of  standardized data, the weight gained throughout the study seems to be a bit smaller in the group 2 in comparison to the other groups. 
+
 
 ### Summary measure analysis of longitudinal data (weight)
 ```{r}
@@ -121,11 +124,11 @@ ggplot(RATSL_, aes(x = Group, y = mean)) +
 
 
 It has been argued that  the average response to treatment over
-time is often likely to be the most relevant summary statistic in treatment trials.  This is why Weight (=the response) was chosen as the summary measure.  The groups differ from each others since their mean Weights and their standard errors are not on top of one another on this boxplot.  Especially group 1 locates far away from groups 2-3 and seems to differ significantly.
+time is often likely to be the most relevant summary statistic in treatment trials.  This is why weight (=the response) was chosen as the summary measure.  The groups differ from each others since their mean Weights and their standard errors are not on top of one another on this boxplot.  Especially group 1 locates far away from groups 2-3 and seems to differ significantly.
 
 No outliers were found in the boxplot when Time point 1 is included. When the Time point 1 was chosen as baseline and exlcuded from the summary data, we can see an outlier in every group. Only the outlier of group 2 was eventually excluded because it stood out so strongly and the others were included in this analysis.
 
-### Summary measure analysis (for growth variable!)
+### Summary measure analysis (for the growth variable!)
 Since there seem to be rather huge differences in the starting weights between the groups, I decided to test the group differences in  procentual growth during the follow up time. The variable "growth" was defined already in the data wrangling part (meet_and_repeat.R) from the original longitudinal data RATS by the following  equation (RATS$WD64-RATS$WD1)/RATS$WD1.
 
 ```{r}
@@ -155,11 +158,11 @@ ggplot(RATSSg, aes(x = Group, y = mean2, shape = Group)) +
 
 
 ```
-Boxplot results: The mean procentual growth  seems to have been greatest in Group 2.Group 1 and 3 are on top of each others and the growth has been rather identical. Whiskers show the  range of procentual growth. 
+Boxplot results: The mean procentual growth  seems to have been greatest in Group 2. Group 1 and 3 are on top of each others and the growth has been rather identical. Whiskers show the  range of procentual growth. 
 
 
 ###  Anova - a formal test for difference
-Anova confirms here that the group differences we could see in the plots were real. P-values were significant  and this means there is significant difference in  mean weights between groups. There was also significant difference in group 2 procentual growth as judged by the plottings
+Anova confirms here that the group differences we were able to see in the plots were real. P-values were significant  and this means there is significant difference in  mean weights between groups. There was also significant difference in group 2 procentual growth as judged by the plottings
 ```{r}
 library(dplyr)
 library(tidyr)
@@ -231,8 +234,9 @@ ggplot(BPRSL, aes(x = week, y = stdbprs, linetype = subject)) +
   scale_y_continuous(name = "standardized bprs")
 
 ```
-                     
-### Linear Mixed Effects Models and the random intercept model
+By visual judgning there seems to be a modest downward trend in BPRS for both treatments during the study. 
+
+### Linear Mixed Effects Models
 ```{r} 
 
 # create a regression model
@@ -241,6 +245,12 @@ BPRSL_reg <- lm(bprs ~ week + treatment, data=BPRSL)
 # print out a summary of the model
 summary(BPRSL_reg)
 
+```
+In this model time seems to have statistically significant lowering effect on  BPRS points (p-value < 0.05, and BPRS is on average 2.27 points lower every week). The two treatment groups did not have statistically significant difference. 
+
+
+### Random Intercept and Random Slope Model without and with interaction
+```{r} 
 
 #the random intercept model
 library(lme4)
@@ -248,11 +258,6 @@ BPRSL_ref <- lmer(bprs ~ week + treatment + (1 | subject), data = BPRSL, REML = 
 
 # Print the summary of the model
 summary(BPRSL_ref)
-```
-Time seems to have effect on points (p-value < 0.05) but not beloning to the different treatment groups. Meaning the two treatments don't seem to have a difference.
-
-### Random Intercept and Random Slope Model
-```{r} 
 
 #create a random intercept and random slope model. 
 library(lme4)
@@ -264,38 +269,16 @@ summary(BPRSL_ref1)
 # perform an ANOVA test on the two models
 anova(BPRSL_ref1, BPRSL_ref)
 
-``` 
 
-
-
-### Random Intercept and Random Slope Model with interaction
-```{r} 
-
-# create a random intercept and random slope model with the interaction
-library(lme4)
-BPRSL_ref2 <- lmer(bprs ~ week * treatment + (1 | subject), data = BPRSL, REML = FALSE)
-BPRSL_ref1 <- lmer(bprs ~ week * treatment + (week | subject), data = BPRSL, REML = FALSE)
-
-# print a summary of the model
-summary(BPRSL_ref1)
+# Random intercept and random slope model with time x treatment interaction 
+BPRSL_ref2 <- lmer(bprs ~ week + treatment + (week | subject) + week * treatment, data = BPRSL, REML = FALSE)
 summary(BPRSL_ref2)
 
-# perform an ANOVA test on the two models
-anova(BPRSL_ref2, BPRSL_ref1)
+``` 
+The results were not statiscially significant for the Random Intercept and Random Slope Models. So all our models failed to provide a reasonable approximation of the final results and in addition there is  no evidence of a treatment difference  between the groups.
 
-# Create a vector of the fitted values
-Fitted <- fitted(BPRSL_ref2)
+ANOVA: our second model (BPRSL_ref1) seems to have a higher  log-likelihood and it seems to perform better in approximating the bprs points  and the difference seems to be statistically significant.
 
-# Create a new column fitted to RATSL
-BPRSL <-  BPRSL %>% mutate(Fitted = fitted(BPRSL_ref2))
-
-# draw the plot with the Fitted values of bprs
-library(ggplot2)
-# ggplot(BPRSL, aes(x = week, y = Fitted, group = subject)) +
- #  geom_line(aes(linetype = treatment)) +
- #  scale_x_continuous(name = "Time (weeks)", breaks = seq(0, 60, 20)) +
- #  scale_y_continuous(name = "Fitted bprs)") +
- #  theme(legend.position = "top")
-
-View(BPRSL)
 ```
+
+![](dogs.webp)
