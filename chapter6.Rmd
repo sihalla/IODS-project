@@ -50,6 +50,7 @@ ggplot(RATSL, aes(x = Time, y = stdweight, linetype = ID)) +
 
 ```
 
+
 An important effect we want to take notice is how the rats who have higher weights  at the beginning  have higher weights throughout the study. This phenomenon is called  tracking.
 
 All the rats also increase in weight during the study. The rats are quite homogenous with  their group members, meaning there is not much inside group variability in weights (dispite the one obvious outlier in group 2). The different rat groups differ in their weight significantly and by visual judgment there seems to be a significant outlier in group 2. 
@@ -123,13 +124,15 @@ ggplot(RATSL_, aes(x = Group, y = mean)) +
 ```
 
 
+
 It has been argued that  the average response to treatment over
 time is often likely to be the most relevant summary statistic in treatment trials.  This is why weight (=the response) was chosen as the summary measure.  The groups differ from each others since their mean Weights and their standard errors are not on top of one another on this boxplot.  Especially group 1 locates far away from groups 2-3 and seems to differ significantly.
 
 No outliers were found in the boxplot when Time point 1 is included. When the Time point 1 was chosen as baseline and exlcuded from the summary data, we can see an outlier in every group. Only the outlier of group 2 was eventually excluded because it stood out so strongly and the others were included in this analysis.
 
-### Summary measure analysis (for the growth variable!)
-Since there seem to be rather huge differences in the starting weights between the groups, I decided to test the group differences in  procentual growth during the follow up time. The variable "growth" was defined already in the data wrangling part (meet_and_repeat.R) from the original longitudinal data RATS by the following  equation (RATS$WD64-RATS$WD1)/RATS$WD1.
+### Summary measure analysis (for the growth variable)
+
+Since there seem to be rather huge differences in the starting weights between the groups, I decided to test the group differences in  percent increase in growth during the follow up time. The variable "growth" was defined already in the data wrangling part (meet_and_repeat.R) from the original longitudinal data RATS by the following  equation (RATS$WD64-RATS$WD1)/RATS$WD1.
 
 ```{r}
 
@@ -154,15 +157,18 @@ ggplot(RATSSg, aes(x = Group, y = mean2, shape = Group)) +
   geom_point(size=3)  +
   geom_errorbar(aes(ymin=mean2-se2, ymax=mean2+se2, linetype="1"), width=0.3) +
   theme(legend.position = c(0.8,0.8)) +
-  scale_y_continuous(name = "mean procentual growth.")
+  scale_y_continuous(name = "mean percentage increase in growth.")
 
 
 ```
-Boxplot results: The mean procentual growth  seems to have been greatest in Group 2. Group 1 and 3 are on top of each others and the growth has been rather identical. Whiskers show the  range of procentual growth. 
+
+Boxplot results: The mean percentage increase in growth  seems to have been greatest in Group 2. Group 1 and 3 are on top of each others and the growth has been rather identical. Whiskers show the  range of percentage increase in growth. 
 
 
 ###  Anova - a formal test for difference
-Anova confirms here that the group differences we were able to see in the plots were real. P-values were significant  and this means there is significant difference in  mean weights between groups. There was also significant difference in group 2 procentual growth as judged by the plottings
+
+Anova confirms here that the group differences we were able to see in the plots were real. P-values were significant  and this means there is significant difference in  mean weights between groups. There was also significant difference in group 2  growth as judged by the plottings.
+
 ```{r}
 library(dplyr)
 library(tidyr)
@@ -234,7 +240,8 @@ ggplot(BPRSL, aes(x = week, y = stdbprs, linetype = subject)) +
   scale_y_continuous(name = "standardized bprs")
 
 ```
-By visual judgning there seems to be a modest downward trend in BPRS for both treatments during the study. 
+
+By visual judging there seems to be a modest downward trend in BPRS for both treatments during the study. 
 
 ### Linear Mixed Effects Models
 ```{r} 
@@ -246,10 +253,11 @@ BPRSL_reg <- lm(bprs ~ week + treatment, data=BPRSL)
 summary(BPRSL_reg)
 
 ```
+
 In this model time seems to have statistically significant lowering effect on  BPRS points (p-value < 0.05, and BPRS is on average 2.27 points lower every week). The two treatment groups did not have statistically significant difference. 
 
 
-### Random Intercept and Random Slope Model without and with interaction
+### Random Intercept and Random Slope Model (without and with interaction)
 ```{r} 
 
 #the random intercept model
@@ -275,6 +283,7 @@ BPRSL_ref2 <- lmer(bprs ~ week + treatment + (week | subject) + week * treatment
 summary(BPRSL_ref2)
 
 ``` 
+
 The results were not statiscially significant for the Random Intercept and Random Slope Models. So all our models failed to provide a reasonable approximation of the final results and in addition there is  no evidence of a treatment difference  between the groups.
 
 ANOVA: our second model (BPRSL_ref1) seems to have a higher  log-likelihood and it seems to perform better in approximating the bprs points  and the difference seems to be statistically significant.
